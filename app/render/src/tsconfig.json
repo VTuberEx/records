@@ -1,0 +1,18 @@
+{
+	"$schema": "http://json.schemastore.org/tsconfig",
+	"extends": "@app/local-rig/profiles/default/src/tsconfig.json",
+	"compilerOptions": {
+		"module": "ESNext",
+		"outDir": "../temp/tsc",
+		"rootDir": "./",
+		"lib": ["DOM", "ESNext"],
+		"jsx": "react-jsx",
+		"sourceRoot": "app://debug/",
+		"jsxImportSource": "react",
+		"rootDirs": ["./", "../temp/sass-ts/"],
+		"skipLibCheck": true,
+		"baseUrl": "./",
+		"paths": {},
+		"noEmit": true
+	}
+}

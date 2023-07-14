@@ -1,0 +1,85 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "rig监视",
+			"command": ["tsc", "-p", "${workspaceFolder}/app/local-rig/src", "-w"],
+			"problemMatcher": "$tsc-watch",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"group": "build",
+				"panel": "shared",
+				"clear": true,
+				"close": true
+			}
+		},
+		{
+			"type": "typescript",
+			"hide": true,
+			"label": "[依赖] rig编译",
+			"tsconfig": "app/local-rig/src",
+			"problemMatcher": "$tsc",
+			"presentation": {
+				"echo": true,
+				"reveal": "silent",
+				"focus": false,
+				"panel": "shared",
+				"clear": true,
+				"close": true
+			},
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "主线程程序",
+			"dependsOn": ["[依赖] rig编译"],
+			"group": "build",
+			"hide": true,
+			"problemMatcher": [],
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"group": "build",
+				"panel": "shared",
+				"clear": true
+			},
+			"options": { "cwd": "${workspaceFolder}/app/main" },
+			"command": ["pnpm", "run", "watch"]
+		},
+		{
+			"type": "shell",
+			"label": "渲染程序",
+			"dependsOn": ["[依赖] rig编译"],
+			"group": "build",
+			"hide": true,
+			"problemMatcher": [],
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"group": "build",
+				"panel": "shared",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"options": { "cwd": "${workspaceFolder}/app/render" },
+			"command": ["pnpm", "run", "watch"]
+		},
+		{
+			"label": "监视修改",
+			"icon": {
+				"id": "play"
+			},
+			"dependsOn": ["渲染程序", "主线程程序"],
+			"problemMatcher": [],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}

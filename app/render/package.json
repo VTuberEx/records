@@ -1,0 +1,30 @@
+{
+	"name": "records",
+	"private": true,
+	"type": "module",
+	"version": "1.0.0",
+	"description": "",
+	"exports": {
+		".": "./lib/index.js"
+	},
+	"scripts": {
+		"clean": "heft --unmanaged clean",
+		"build": "heft --unmanaged build",
+		"watch": "heft --unmanaged build-watch",
+		"jspm": "jspm",
+		"heft": "heft --unmanaged"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "MIT",
+	"packageManager": "pnpm@8.6.3",
+	"devDependencies": {
+		"@app/local-rig": "workspace:^",
+		"@rushstack/heft": "^0.56.3"
+	},
+	"dependencies": {
+		"es-module-shims": "^1.7.3",
+		"esbuild-sass-plugin": "^2.10.0",
+		"react": "npm:preact@^10.16.0"
+	}
+}

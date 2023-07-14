@@ -1,0 +1,11 @@
+{
+	"extends": "@build-script/single-dog-asset/package/tsconfig.no-lib.json",
+	"compilerOptions": {
+		"noEmitOnError": false,
+		"incremental": false,
+		"composite": false,
+		"declaration": false,
+		"declarationMap": false,
+		"typeRoots": ["../../../../../node_modules/@types", "../../../../../node_modules"],
+	}
+}

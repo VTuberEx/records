@@ -1,0 +1,45 @@
+{
+	"$schema": "https://developer.microsoft.com/json-schemas/heft/v0/heft.schema.json",
+	"aliasesByName": {},
+	"phasesByName": {
+		"build": {
+			"cleanFiles": [{ "sourcePath": "temp/tsc" }, { "sourcePath": "lib" }],
+			"tasksByName": {
+				"typescript": {
+					"taskPlugin": {
+						"pluginPackage": "@rushstack/heft-typescript-plugin"
+					}
+				},
+				"esbuild": {
+					"taskPlugin": {
+						"pluginName": "esbuild",
+						"pluginPackage": "@app/local-rig",
+						"options": {
+							"scriptFile": "./src/index.tsx",
+							"styleFile": "./src/index.scss",
+							"output": "./lib",
+							"publicPath": "app://dist/",
+							"alias": { "preact": "react" }
+						}
+					}
+				},
+				"make-index-html": {
+					"taskPlugin": {
+						"pluginName": "copy-files-plugin",
+						"pluginPackage": "@rushstack/heft",
+						"options": {
+							"copyOperations": [
+								{
+									"sourcePath": "src",
+									"destinationFolders": ["lib"],
+									"fileExtensions": [".html"]
+								}
+							]
+						}
+					}
+				}
+			}
+		}
+	},
+	"heftPlugins": []
+}

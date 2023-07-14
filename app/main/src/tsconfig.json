@@ -1,0 +1,8 @@
+{
+	"extends": "@app/local-rig/profiles/default/src/tsconfig.json",
+	"compilerOptions": {
+		"outDir": "../lib",
+		"rootDir": "./",
+		"lib": ["DOM", "ESNext"]
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"name": "@app/local-rig",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"build": "tsc -p src",
+		"watch": "tsc -p src --watch"
+	},
+	"dependencies": {
+		"@build-script/single-dog-asset": "^1.0.26",
+		"@idlebox/node": "^1.2.16",
+		"@jspm/generator": "^1.1.9",
+		"@rushstack/heft-typescript-plugin": "^0.1.16",
+		"@types/node": "^20.4.1",
+		"esbuild": "^0.18.12",
+		"prettier": "^3.0.0",
+		"sass": "^1.63.6",
+		"typescript": "^5.1.6"
+	}
+}

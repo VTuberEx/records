@@ -1,0 +1,17 @@
+{
+	"$schema": "https://developer.microsoft.com/json-schemas/heft/v0/heft.schema.json",
+	"aliasesByName": {},
+	"phasesByName": {
+		"build": {
+			"cleanFiles": [{ "sourcePath": "lib" }],
+			"tasksByName": {
+				"typescript": {
+					"taskPlugin": {
+						"pluginPackage": "@rushstack/heft-typescript-plugin"
+					}
+				}
+			}
+		}
+	},
+	"heftPlugins": []
+}

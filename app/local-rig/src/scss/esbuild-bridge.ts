@@ -132,7 +132,7 @@ export function ScssCombinePlugin(session: IHeftTaskSession, options: IOptions):
 			build.onEnd(async (result) => {
 				// console.log('------------', registry, result.metafile!.outputs['lib/index.js']);
 
-				for (const [outputFile, { entryPoint, inputs }] of Object.entries(result.metafile!.outputs)) {
+				for (const [outputFile, { inputs }] of Object.entries(result.metafile!.outputs)) {
 					const keys = Object.keys(inputs).filter((id) => registry.has(id));
 					if (keys.length === 0) continue;
 

@@ -1,10 +1,9 @@
 import type { HeftConfiguration, IHeftTaskSession } from '@rushstack/heft';
 
-import { readFile } from 'fs/promises';
 import { resolve } from 'path';
 import { IHeftTaskPlugin } from '@rushstack/heft';
-import esbuild, { BuildContext, BuildOptions, Plugin, transform } from 'esbuild';
-import { ScssCombinePlugin } from './scss/plugin';
+import esbuild, { BuildContext, BuildOptions } from 'esbuild';
+import { ScssCombinePlugin } from './scss/esbuild-bridge';
 
 export const PLUGIN_NAME = 'esbuild';
 
@@ -77,6 +76,10 @@ export default class ESBuildPlugin implements IHeftTaskPlugin<IOptions> {
 			publicPath: this.publicPath,
 			mainFields: ['browser', 'module', 'main'],
 			resolveExtensions: ['.ts', '.tsx', '.js'],
+			loader: {
+				'.png': 'dataurl',
+				'.svg': 'text',
+			},
 			sourcemap: 'linked',
 			sourceRoot: 'app://debug/',
 			sourcesContent: false,
@@ -88,20 +91,10 @@ export default class ESBuildPlugin implements IHeftTaskPlugin<IOptions> {
 			charset: 'utf8',
 			plugins: [
 				ScssCombinePlugin(session, {
-					sourceRoot: './src', // TODO
+					// TODO
+					sourceRoot: './src',
 				}),
 			],
 		});
 	}
 }
-
-export const CSSMinifyPlugin: Plugin = {
-	name: 'CSSMinifyPlugin',
-	setup(build) {
-		build.onLoad({ filter: /\.css$/ }, async (args) => {
-			const f = await readFile(args.path);
-			const css = await transform(f, { loader: 'css', minify: true });
-			return { loader: 'text', contents: css.code };
-		});
-	},
-};

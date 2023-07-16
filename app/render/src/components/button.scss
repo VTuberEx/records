@@ -1,8 +1,10 @@
+@use './x' as x;
+
 ::container {
 	font-size: 30px;
 	label {
 		font: bold;
-		color: red;
+		color: x.$color;
 
 		button {
 			padding: 20px;

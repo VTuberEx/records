@@ -1,5 +1,6 @@
-import { app, BrowserWindow, protocol } from 'electron';
+import { app, protocol } from 'electron';
 import { ApplicationProvider } from './common/app-provider/main';
+import { createMainWindow } from './common/main-window';
 
 console.log('dependencies loaded.');
 
@@ -37,18 +38,4 @@ app.whenReady().then(() => {
 	protocol.handle('app', ApplicationProvider);
 
 	createMainWindow();
-
-	function createMainWindow() {
-		const win = new BrowserWindow({
-			width: 1824,
-			height: 1008,
-		});
-
-		win.loadURL('app://dist/index.html', {});
-
-		win.on('ready-to-show', () => {
-			win.show();
-			win.webContents.openDevTools();
-		});
-	}
 });

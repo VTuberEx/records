@@ -1,0 +1,24 @@
+@use './library' as lib;
+
+@import 'primeflex/primeflex';
+@import 'primereact/resources/themes/tailwind-light/theme.css';
+@import 'primereact/resources/primereact.css';
+@import 'primeicons/primeicons.css';
+
+body {
+	margin: 0;
+}
+
+@import './panel';
+
+.cr {
+	@extend .flex;
+	@extend .flex-row;
+	@extend .gap-3;
+}
+
+.cc {
+	@extend .flex;
+	@extend .flex-column;
+	@extend .gap-4;
+}

@@ -16,10 +16,10 @@
 						"pluginPackage": "@app/local-rig",
 						"options": {
 							"scriptFile": "./src/index.tsx",
-							"styleFile": "./src/index.scss",
+							"styleFile": "./src/styles/index.scss",
 							"output": "./lib",
 							"publicPath": "app://dist/",
-							"alias": { "preact": "react" }
+							"alias": { "react": "preact/compat", "react-dom": "preact/compat" }
 						}
 					}
 				},
@@ -41,5 +41,5 @@
 			}
 		}
 	},
-	"heftPlugins": []
+	"heftPlugins": [{ "pluginPackage": "@app/local-rig", "pluginName": "clear-screen" }]
 }

@@ -6,13 +6,16 @@
 		"outDir": "../temp/tsc",
 		"rootDir": "./",
 		"lib": ["DOM", "ESNext"],
-		"jsx": "react-jsx",
 		"sourceRoot": "app://debug/",
+		"resolveJsonModule": true,
+		"jsx": "react-jsx",
 		"jsxImportSource": "react",
 		"rootDirs": ["./", "../temp/sass-ts/"],
-		"skipLibCheck": true,
 		"baseUrl": "./",
-		"paths": {},
-		"noEmit": true
+		"noEmit": true,
+		"typeRoots": [/*"../../../scripts/types", */ "../node_modules/@types/", "../node_modules"],
+		"types": [],
+		"strictNullChecks": false,
+		"strictPropertyInitialization": false
 	}
 }

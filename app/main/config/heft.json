@@ -9,9 +9,19 @@
 					"taskPlugin": {
 						"pluginPackage": "@rushstack/heft-typescript-plugin"
 					}
+				},
+				"esbuild": {
+					"taskPlugin": {
+						"pluginName": "esbuild",
+						"pluginPackage": "@app/local-rig",
+						"options": {
+							"scriptFile": "./src/preload/index.ts",
+							"output": "./lib/preload"
+						}
+					}
 				}
 			}
 		}
 	},
-	"heftPlugins": []
+	"heftPlugins": [{ "pluginPackage": "@app/local-rig", "pluginName": "clear-screen" }]
 }

@@ -1,6 +1,8 @@
-import { app, protocol } from 'electron';
+import { app, Menu, protocol } from 'electron';
+import { startApi } from './common/api/protocol';
 import { ApplicationProvider } from './common/app-provider/main';
 import { createMainWindow } from './common/main-window';
+import { settingsStore } from './common/misc/settings';
 
 console.log('dependencies loaded.');
 
@@ -19,23 +21,30 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 app.on('window-all-closed', () => {
+	console.log('[EVENT] window-all-closed');
 	app.quit();
 });
 
 app.on('web-contents-created', (_, contents) => {
 	contents.on('will-navigate', (event, navigationUrl) => {
-		console.log('will-navigate:', navigationUrl);
+		console.log('[EVENT] will-navigate:', navigationUrl);
 		event.preventDefault();
 	});
 
 	contents.setWindowOpenHandler((edata) => {
-		console.log('WindowOpenHandler:', edata);
+		console.log('[EVENT] WindowOpenHandler:', edata);
 		return { action: 'deny' };
 	});
 });
 
-app.whenReady().then(() => {
-	protocol.handle('app', ApplicationProvider);
+Menu.setApplicationMenu(null);
 
+export async function app_main_function() {
+	await app.whenReady();
+	console.log('[EVENT] app-ready');
+
+	await settingsStore.init();
+	await startApi();
+	protocol.handle('app', ApplicationProvider);
 	createMainWindow();
-});
+}

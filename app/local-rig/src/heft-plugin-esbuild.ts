@@ -3,13 +3,14 @@ import type { HeftConfiguration, IHeftTaskSession } from '@rushstack/heft';
 import { resolve } from 'path';
 import { IHeftTaskPlugin } from '@rushstack/heft';
 import esbuild, { BuildContext, BuildOptions } from 'esbuild';
-import { ScssCombinePlugin } from './scss/esbuild-bridge';
+import { SkipElectronPlugin } from './javascript/esbuild-skip-electron';
+import { ScssCombinePlugin } from './scss/esbuild-sass-bridge';
 
 export const PLUGIN_NAME = 'esbuild';
 
 interface IOptions {
 	readonly alias?: Record<string, string>;
-	readonly scriptFile: string;
+	readonly scriptFile: string | string[];
 	readonly styleFile: string;
 	readonly output: string;
 	readonly publicPath?: string;
@@ -38,8 +39,22 @@ export default class ESBuildPlugin implements IHeftTaskPlugin<IOptions> {
 		this.alias = options.alias;
 		this.rootDir = configuration.buildFolderPath;
 
+		const contextsPromise = this.getContext(session, options);
+
 		session.hooks.run.tapPromise(PLUGIN_NAME, async () => {
-			const contexts = await this.getContext(session, options);
+			const contexts = await contextsPromise;
+
+			for (const context of contexts) {
+				await context.rebuild();
+			}
+
+			session.logger.terminal.writeLine('complete build without errors.');
+
+			await Promise.all(contexts.map((e) => e.dispose()));
+		});
+
+		session.hooks.runIncremental.tapPromise(PLUGIN_NAME, async () => {
+			const contexts = await contextsPromise;
 
 			for (const context of contexts) {
 				await context.rebuild();
@@ -56,40 +71,50 @@ export default class ESBuildPlugin implements IHeftTaskPlugin<IOptions> {
 		const contexts = [];
 
 		if (options.scriptFile) {
-			contexts.push(await this.createScriptContext(session, options.scriptFile));
+			const arr = Array.isArray(options.scriptFile) ? options.scriptFile : [options.scriptFile];
+			contexts.push(await this.createScriptContext(session, arr));
 		}
 		if (options.styleFile) {
-			contexts.push(await this.createScriptContext(session, options.styleFile));
+			contexts.push(await this.createScriptContext(session, [options.styleFile]));
 		}
 
 		this._contexts = contexts;
 		return contexts;
 	}
 
-	createScriptContext(session: IHeftTaskSession, entryFile: string) {
+	createScriptContext(session: IHeftTaskSession, entryFiles: string[]) {
 		return esbuild.context<BuildOptions>({
-			entryPoints: [entryFile],
+			entryPoints: entryFiles,
 			bundle: true,
 			splitting: false,
 			platform: 'browser',
+			assetNames: 'assets/[name][ext]',
 			outdir: this.outputDir,
 			publicPath: this.publicPath,
 			mainFields: ['browser', 'module', 'main'],
+			conditions: ['browser', 'import', 'default'],
 			resolveExtensions: ['.ts', '.tsx', '.js'],
 			loader: {
-				'.png': 'dataurl',
+				'.png': 'file',
 				'.svg': 'text',
+				'.woff2': 'file',
+				'.woff': 'file',
+				'.ttf': 'file',
+				'.eot': 'file',
 			},
 			sourcemap: 'linked',
 			sourceRoot: 'app://debug/',
 			sourcesContent: false,
+			write: true,
 			metafile: true,
 			absWorkingDir: this.rootDir,
 			alias: this.alias,
 			keepNames: true,
 			format: 'esm',
 			charset: 'utf8',
+			target: 'esnext',
 			plugins: [
+				SkipElectronPlugin(),
 				ScssCombinePlugin(session, {
 					// TODO
 					sourceRoot: './src',

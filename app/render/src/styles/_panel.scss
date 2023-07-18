@@ -1,0 +1,93 @@
+.p-panel {
+	> .p-toggleable-content:not(:last-child) > .p-panel-content {
+		border-radius: 0;
+	}
+
+	&.has-error {
+		> .p-panel-header {
+			border: 1px lib.$errorMessageBorder;
+			background-color: lib.$errorMessageBg;
+			color: lib.$errorMessageTextColor;
+		}
+		> .p-toggleable-content > .p-panel-content {
+			border: 1px lib.$errorMessageBorder;
+			border-top: 0 none;
+		}
+		> .p-panel-footer {
+			border: 1px lib.$errorMessageBorder;
+			border-top: 0 none;
+			border-bottom-right-radius: lib.$borderRadius;
+			border-bottom-left-radius: lib.$borderRadius;
+		}
+	}
+	&.has-warning {
+		> .p-panel-header {
+			border: 1px lib.$warningMessageBorder;
+			background-color: lib.$warningMessageBg;
+			color: lib.$warningMessageTextColor;
+		}
+		> .p-toggleable-content > .p-panel-content {
+			border: 1px lib.$warningMessageBorder;
+			border-top: 0 none;
+		}
+		> .p-panel-footer {
+			border: 1px lib.$warningMessageBorder;
+			border-top: 0 none;
+			border-bottom-right-radius: lib.$borderRadius;
+			border-bottom-left-radius: lib.$borderRadius;
+		}
+	}
+	&.has-success {
+		> .p-panel-header {
+			border: 1px lib.$successMessageBorder;
+			background-color: lib.$successMessageBg;
+			color: lib.$successMessageTextColor;
+		}
+		> .p-toggleable-content > .p-panel-content {
+			border: 1px lib.$successMessageBorder;
+			border-top: 0 none;
+		}
+		> .p-panel-footer {
+			border: 1px lib.$successMessageBorder;
+			border-top: 0 none;
+			border-bottom-right-radius: lib.$borderRadius;
+			border-bottom-left-radius: lib.$borderRadius;
+		}
+	}
+	&.has-info {
+		> .p-panel-header {
+			border: 1px lib.$infoMessageBorder;
+			background-color: lib.$infoMessageBg;
+			color: lib.$infoMessageTextColor;
+		}
+		> .p-toggleable-content > .p-panel-content {
+			border: 1px lib.$infoMessageBorder;
+			border-top: 0 none;
+		}
+		> .p-panel-footer {
+			border: 1px lib.$infoMessageBorder;
+			border-top: 0 none;
+			border-bottom-right-radius: lib.$borderRadius;
+			border-bottom-left-radius: lib.$borderRadius;
+		}
+	}
+}
+
+/*
+$infoMessageBg:#EFF6FF !default;
+$infoMessageBorder:solid #2563EB !default;
+$infoMessageTextColor:#2563EB !default;
+$infoMessageIconColor:#2563EB !default;
+$successMessageBg:#ECFDF5 !default;
+$successMessageBorder:solid #059669 !default;
+$successMessageTextColor:#059669 !default;
+$successMessageIconColor:#059669 !default;
+$warningMessageBg:#FEF3C7 !default;
+$warningMessageBorder:solid #D97706 !default;
+$warningMessageTextColor:#D97706 !default;
+$warningMessageIconColor:#D97706 !default;
+$errorMessageBg:#FEF3C7 !default;
+$errorMessageBorder:solid #DC2626 !default;
+$errorMessageTextColor:#DC2626 !default;
+$errorMessageIconColor:#DC2626 !default;
+*/

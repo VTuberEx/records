@@ -1,9 +1,9 @@
-import { readFileSync } from 'fs';
-import { extname, relative, resolve } from 'path';
+import { mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { dirname, extname, relative, resolve } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
+import { relativePath } from '@idlebox/node';
 import { BuildOptions } from 'esbuild';
 import { compile, CompileResult, compileString } from 'sass';
-import { createModifyTimeCache } from '../common/mtimeCache';
 import { ExLogger } from './tools/logger';
 import { createScssImporter } from './tools/resolve';
 import { RawSourceMap } from './tools/sourcemap';
@@ -48,13 +48,19 @@ export class MyScssCompiler {
 		return this.nameCache[filename]!;
 	}
 
-	public readonly compileModule = createModifyTimeCache<IScssModuleCompileResult>((styleFile) => {
+	compileModule(styleFile: string): IScssModuleCompileResult {
 		const className = this.createUniqueName(styleFile);
 		const data = readFileSync(styleFile, 'utf-8');
 
 		const lines = data.replace(/::container/, '&').split('\n');
 		const lastId = lines.findIndex((l) => {
-			return l.trim() && !l.startsWith('@use') && !l.startsWith('$') && !l.startsWith('/');
+			return (
+				l.trim() &&
+				!l.startsWith('@use') &&
+				!l.startsWith('@import') &&
+				!l.startsWith('$') &&
+				!l.startsWith('/')
+			);
 		});
 		lines.splice(lastId, 0, '.' + className + '{');
 		lines.push('}');
@@ -66,7 +72,7 @@ export class MyScssCompiler {
 				logger: this.logger,
 				style: 'expanded',
 				sourceMap: true,
-				url: new URL(pathToFileURL(styleFile)),
+				url: pathToFileURL(styleFile),
 				importers: [createScssImporter(styleFile, this.logger)],
 			});
 		} catch (e: any) {
@@ -74,16 +80,18 @@ export class MyScssCompiler {
 			throw err;
 		}
 
-		this.logger.debug(`compiled: ${styleFile} (${className})`);
+		this.logger.debug(
+			`compiled: ${styleFile} (${className}) => ${this.writeDebugTempOutput(styleFile, result.css)}`
+		);
 		return {
 			className,
 			cssText: result.css,
 			sourceMap: result.sourceMap!,
 			watchFiles: flattenResultLoaded(result),
 		};
-	});
+	}
 
-	public readonly compileStyle = createModifyTimeCache<IScssSheetCompileResult>((styleFile) => {
+	compileStyle(styleFile: string): IScssSheetCompileResult {
 		let result;
 
 		try {
@@ -99,12 +107,22 @@ export class MyScssCompiler {
 			throw err;
 		}
 
+		this.logger.debug(`compiled: ${styleFile} => ${this.writeDebugTempOutput(styleFile, result.css)}`);
 		return {
 			cssText: result.css,
 			sourceMap: result.sourceMap!,
 			watchFiles: flattenResultLoaded(result),
 		};
-	});
+	}
+
+	private writeDebugTempOutput(inputFile: string, cssText: string) {
+		const rel = relativePath(this.context.sourceDir, inputFile).replace(/^[/.]+/, '');
+		const file = resolve(this.context.rootDir, 'temp/css-debug', rel);
+		mkdirSync(dirname(file), { recursive: true });
+		writeFileSync(file, cssText, 'utf-8');
+
+		return file;
+	}
 }
 
 function flattenResultLoaded(result: CompileResult) {

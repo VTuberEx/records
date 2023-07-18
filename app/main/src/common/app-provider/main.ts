@@ -36,7 +36,7 @@ async function sendfile(request: GlobalRequest, root: string, path: string) {
 	const mime = getMime(extname(file));
 	const data = await readFile(file);
 	log(request, true, `${data.length}bytes`);
-	return new Response(data, { headers: { 'Content-Type': mime } });
+	return new Response(data, { headers: { 'Content-Type': mime, 'Cache-control': 'no-cache' } });
 }
 
 export async function ApplicationProvider(request: GlobalRequest): Promise<GlobalResponse> {

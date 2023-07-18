@@ -1,0 +1,16 @@
+{
+	"name": "@app/protocol",
+	"private": true,
+	"type": "module",
+	"version": "1.0.0",
+	"description": "",
+	"main": "./global.js",
+	"types": "./global.d.ts",
+	"scripts": {},
+	"keywords": [],
+	"author": "",
+	"license": "MIT",
+	"packageManager": "pnpm@8.6.3",
+	"devDependencies": {},
+	"dependencies": {}
+}

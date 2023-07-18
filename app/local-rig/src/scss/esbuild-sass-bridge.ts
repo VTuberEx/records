@@ -101,21 +101,21 @@ export function ScssCombinePlugin(session: IHeftTaskSession, options: IOptions):
 				return resolveMap.get(path) || null;
 			});
 
-			build.onLoad({ filter: /\.scss$/ }, async (args): Promise<OnLoadResult | undefined> => {
+			build.onLoad({ filter: /\.scss$/ }, (args): OnLoadResult | undefined => {
 				session.logger.terminal.writeDebugLine(
 					`onLoad: (${args.namespace}) ${args.path} ${args.pluginData?.asStyle ? '(asStyle)' : ''}`
 				);
 				if (args.namespace !== 'file') return;
 
 				if (args.pluginData?.asStyle) {
-					const { cssText, sourceMap, watchFiles } = await compiler.compileStyle(args.path);
+					const { cssText, sourceMap, watchFiles } = compiler.compileStyle(args.path);
 
 					const contents =
 						cssText +
 						inlineSourceMap(sourceMap, build.initialOptions.sourceRoot!, build.initialOptions.sourceRoot!);
 					return { loader: 'css', contents, watchFiles };
 				} else {
-					const result = await compiler.compileModule(args.path);
+					const result = compiler.compileModule(args.path);
 
 					registry.set(relative(rootDir, args.path), result);
 
@@ -131,13 +131,14 @@ export function ScssCombinePlugin(session: IHeftTaskSession, options: IOptions):
 
 			build.onEnd(async (result) => {
 				// console.log('------------', registry, result.metafile!.outputs['lib/index.js']);
+				if (!result.metafile) return;
 
 				for (const [outputFile, { inputs }] of Object.entries(result.metafile!.outputs)) {
 					const keys = Object.keys(inputs).filter((id) => registry.has(id));
 					if (keys.length === 0) continue;
 
 					const outBase = outputFile.slice(0, outputFile.length - extname(outputFile).length);
-					console.log('------------', outputFile, inputs);
+					// console.log('------------', outputFile, inputs);
 					const cssOutput = resolve(rootDir, outBase + '.module.css');
 					const concat = new ConcatWithSourceMap(true, cssOutput, '\n');
 

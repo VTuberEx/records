@@ -1,0 +1,11 @@
+{
+	"name": "scripts",
+	"private": true,
+	"dependencies": {
+		"typescript": "^5.1.6"
+	},
+	"devDependencies": {
+		"prettier": "^3.0.0",
+		"pretty-quick": "^3.1.3"
+	}
+}

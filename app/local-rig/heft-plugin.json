@@ -3,7 +3,13 @@
 	"taskPlugins": [
 		{
 			"pluginName": "esbuild",
-			"entryPoint": "./lib/plugin-esbuild.js"
+			"entryPoint": "./lib/heft-plugin-esbuild.js"
+		}
+	],
+	"lifecyclePlugins": [
+		{
+			"pluginName": "clear-screen",
+			"entryPoint": "./lib/heft-plugin-clear-screen.js"
 		}
 	]
 }

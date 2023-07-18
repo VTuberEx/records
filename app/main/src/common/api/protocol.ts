@@ -1,5 +1,6 @@
 import type { IElectronAPI } from '@app/protocol';
 import { rmSync } from 'fs';
+import { promiseBool } from '@idlebox/common';
 import { app, ipcMain } from 'electron';
 import { STORAGE_ROOT } from '../constants';
 import { settingsStore } from '../misc/settings';
@@ -21,19 +22,48 @@ export async function startApi() {
 			app.exit(0);
 			throw new Error('???');
 		},
+		relaunch() {
+			return promiseBool(settingsStore.commit()).finally(() => {
+				app.relaunch({});
+				app.exit(0);
+			});
+		},
 		async verifySettings() {
 			throw new Error('not impl');
 		},
 	};
 
 	ipcMain.handle('api', (_e, meta?: IRequestMetadata, ...args) => {
-		if (typeof meta?.request !== 'string') throw new Error('invalid request metadata');
+		return Promise.resolve()
+			.then(() => {
+				if (typeof meta?.request !== 'string') throw new Error('invalid request metadata');
 
-		const callback = handler[meta.request];
+				const callback = handler[meta.request];
 
-		if (callback.length !== args.length) {
-			throw new Error('mismatch arguments size');
-		}
-		return (callback as any)(...args);
+				if (callback.length !== args.length) {
+					throw `mismatch arguments size. want ${callback.length}, got ${args.length}`;
+				}
+
+				return (callback as any)(...args);
+			})
+			.then(
+				(data: any) => {
+					return { success: true, data };
+				},
+				(error: any) => {
+					if (error instanceof Error) {
+						return {
+							success: false,
+							error: {
+								message: error.message,
+								code: (error as any).code,
+								stack: error.stack,
+							},
+						};
+					} else {
+						return { success: false, error: { message: error } };
+					}
+				}
+			);
 	});
 }

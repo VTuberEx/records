@@ -89,7 +89,7 @@ class SettingsStore {
 		await mkdir(dirname(this.file), { recursive: true });
 		await writeFile(
 			this.file,
-			JSON.stringify(defaultSettings, null, 1).replace(/^ +/, (e) => '\t'.repeat(e.length)),
+			JSON.stringify(defaultSettings, null, 1).replace(/^ +/gm, (e) => '\t'.repeat(e.length)) + '\n',
 			'utf-8'
 		);
 		await this.read();
@@ -108,8 +108,9 @@ class SettingsStore {
 		console.log(JSON.stringify(this.state, null, 2));
 	}
 
-	async set<T extends keyof IMainSettings>(key: T, value: IMainSettings[T]) {
-		if (typeof value !== typeof this.state[key]) throw new TypeError('mismatch data type.');
+	set<T extends keyof IMainSettings>(key: T, value: IMainSettings[T]) {
+		if (typeof value !== typeof this.state[key])
+			throw new TypeError(`mismatch data type. want ${typeof this.state[key]}, receive ${typeof value}.`);
 		if (value === this.state[key]) return;
 
 		this.state[key] = value;

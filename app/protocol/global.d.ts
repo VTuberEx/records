@@ -13,6 +13,7 @@ export interface IElectronAPI {
 	loadSettings(): Promise<ISystemSetting>;
 	updateSettings<T extends keyof ISystemSetting>(key: T, value: ISystemSetting[T]): Promise<void>;
 	uninstall(): never;
+	relaunch(): Promise<boolean>;
 	verifySettings(): Promise<void>;
 }
 

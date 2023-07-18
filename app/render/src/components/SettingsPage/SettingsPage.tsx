@@ -8,6 +8,7 @@ import { InputNumber } from 'primereact/inputnumber';
 import { InputText } from 'primereact/inputtext';
 import { Message } from 'primereact/message';
 import { Panel } from 'primereact/panel';
+import { ToggleButton } from 'primereact/togglebutton';
 import { electronAPI } from '../../common/electron/bridge';
 import { appSettings } from '../../common/state/settings';
 import { disableEvent } from '../../common/uitls/events';
@@ -18,18 +19,18 @@ export class SettingsPage extends Component {
 			<div className="flex flex-column gap-4">
 				<Panel header="自动下载" icons={<i className={PrimeIcons.BOOKMARK} />} toggleable={false}>
 					<form className="cc" onSubmit={disableEvent}>
-						<div className="p-inputgroup">
-							<label htmlFor="proxy" className="p-inputgroup-addon">
-								代理服务器
-							</label>
-							<InputText
-								id="proxy"
-								placeholder="http|socks5://user:pass@host:port"
-								{...appSettings.getInputProps('proxyServer')}
-							/>
-							<Button icon="pi pi-question" severity="secondary" label="测试" disabled />
-						</div>
 						<div className="cr">
+							<div className="p-inputgroup w-5">
+								<label htmlFor="proxy" className="p-inputgroup-addon">
+									代理服务器
+								</label>
+								<InputText
+									id="proxy"
+									placeholder="http|socks5://user:pass@host:port"
+									{...appSettings.getInputProps('proxyServer')}
+								/>
+							</div>
+							<Button icon="pi pi-question" severity="secondary" label="测试" disabled />
 							<Button icon="pi pi-cloud-download" severity="secondary" label="ffmpeg" disabled />
 							<Button icon="pi pi-cloud-download" severity="secondary" label="mediainfo" disabled />
 							<Button icon="pi pi-cloud-download" severity="secondary" label="ggml-medium.bin" disabled />
@@ -106,7 +107,6 @@ export class SettingsPage extends Component {
 								<InputNumber
 									{...appSettings.getInputNumberProps('recordGapMinutes')}
 									inputId="gap-time"
-									name="gap-time"
 									placeholder=""
 									mode="decimal"
 									min={0}
@@ -117,17 +117,60 @@ export class SettingsPage extends Component {
 								</label>
 							</div>
 
-							<label className="flex align-items-center w-2">
+							<label className="flex align-items-center">
 								<Checkbox
+									inputId="ignore-title"
 									{...appSettings.getCheckboxProps('recordIgnoreTitle')}
-									name="ignore-title-change"
 									value="yes"
 								/>
-								<span>无视标题发生改变</span>
+								<label htmlFor="ignore-title" className="ml-2">
+									无视标题发生改变
+								</label>
 							</label>
 						</div>
 
-						<Divider />
+						<div className="cr flex-jus">
+							<div className="p-inputgroup w-25rem">
+								<label htmlFor="op-time" className="p-inputgroup-addon">
+									场记信息显示
+								</label>
+								<InputNumber
+									inputId="op-time"
+									placeholder=""
+									mode="decimal"
+									min={0}
+									maxFractionDigits={3}
+									useGrouping={false}
+									{...appSettings.getInputNumberProps('opTime')}
+								/>
+								<ToggleButton
+									onLabel="秒"
+									offLabel="帧"
+									{...appSettings.getCheckboxProps('opTimeIsSec')}
+								/>
+								<label className="p-inputgroup-addon">（0禁用）</label>
+							</div>
+
+							<div className="p-inputgroup w-3">
+								<div className="flex align-items-center">
+									<Checkbox
+										inputId="op-show-room"
+										value="yes"
+										{...appSettings.getCheckboxProps('opShowRoom')}
+									/>
+									<label htmlFor="op-show-room" className="ml-2">
+										附加直播间信息
+									</label>
+								</div>
+							</div>
+						</div>
+					</form>
+				</Panel>
+
+				<Divider />
+
+				<Panel header="危险区域" toggleable={true} collapsed>
+					<form className="cc" onSubmit={disableEvent}>
 						<div className="cr">
 							<Button
 								size="small"

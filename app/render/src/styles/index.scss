@@ -1,12 +1,34 @@
 @use './library' as lib;
 
 @import 'primeflex/primeflex';
-@import 'primereact/resources/themes/tailwind-light/theme.css';
+@import 'primereact/resources/themes/fluent-light/theme.css';
 @import 'primereact/resources/primereact.css';
 @import 'primeicons/primeicons.css';
 
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem:not(.p-highlight):not(.p-disabled):hover .p-menuitem-link {
+	background: #f3f2f1;
+	border-color: transparent;
+	color: black;
+}
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link {
+	background: #f9f9f9;
+	border-color: transparent;
+	color: black;
+}
+
+:root {
+	--background-color-inactive: #f3f3f3;
+	--background-color: #eff4f9;
+}
+
 body {
 	margin: 0;
+	// background: var(--background-color);
+
+	// &.inactive {
+	// 	background: var(--background-color-inactive);
+	// }
+	background: transparent !important;
 }
 
 @import './panel';

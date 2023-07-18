@@ -1,6 +1,6 @@
 import { mkdirSync } from 'fs';
 import { platform } from 'os';
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
 import { findUpUntilSync } from '@idlebox/node';
 import { app } from 'electron';
 
@@ -16,7 +16,7 @@ const detect = app.isPackaged
 			const render = resolve(__dirname, '../../../render');
 			const src = resolve(render, 'src');
 
-			const projRoot = findUpUntilSync(__dirname, 'pnpm-workspace.yaml')!;
+			const projRoot = dirname(findUpUntilSync(__dirname, 'pnpm-workspace.yaml')!);
 			const nm = resolve(projRoot, 'node_modules');
 
 			return { nm, src, root: projRoot };

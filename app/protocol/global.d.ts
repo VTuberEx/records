@@ -7,6 +7,15 @@ export interface ISystemSetting {
 	readonly whisperLanguage: string;
 	readonly recordGapMinutes: number;
 	readonly recordIgnoreTitle: boolean;
+	readonly opTime: number;
+	readonly opTimeIsSec: boolean;
+	readonly opShowRoom: boolean;
+}
+
+export interface ISettingVerify {
+	readonly ffmpegVersion: string;
+	readonly mediainfoVersion: string;
+	readonly errors: readonly string[];
 }
 
 export interface IElectronAPI {
@@ -16,6 +25,15 @@ export interface IElectronAPI {
 	relaunch(): Promise<boolean>;
 	verifySettings(): Promise<void>;
 }
+
+export interface IElectronEvents {
+	on(name: string, callback: Function): void;
+	once(name: string, callback: Function): void;
+	off(name: string, callback: Function): void;
+	removeAllListeners(name: string): void;
+}
+
+export type ProtocolEvent = 'focus';
 
 export interface ITimeSection {
 	start: number;

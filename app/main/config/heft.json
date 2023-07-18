@@ -11,6 +11,7 @@
 					}
 				},
 				"esbuild": {
+					"taskDependencies": ["typescript"],
 					"taskPlugin": {
 						"pluginName": "esbuild",
 						"pluginPackage": "@app/local-rig",

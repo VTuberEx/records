@@ -3,7 +3,6 @@
 	"compilerOptions": {
 		"outDir": "../lib",
 		"rootDir": "./",
-		"lib": ["DOM", "ESNext"]
-	},
-	"exclude": ["preload"]
+		"lib": ["DOM", "ESNext"],
+	}
 }

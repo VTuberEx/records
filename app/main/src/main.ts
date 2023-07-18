@@ -1,5 +1,5 @@
 import { app, Menu, protocol } from 'electron';
-import { startApi } from './common/api/protocol';
+import { startApi } from './common/api/server-protocol';
 import { ApplicationProvider } from './common/app-provider/main';
 import { createMainWindow } from './common/main-window';
 import { settingsStore } from './common/misc/settings';

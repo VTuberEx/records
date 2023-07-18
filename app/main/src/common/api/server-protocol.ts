@@ -22,14 +22,16 @@ export async function startApi() {
 			app.exit(0);
 			throw new Error('???');
 		},
-		relaunch() {
-			return promiseBool(settingsStore.commit()).finally(() => {
+		async relaunch() {
+			try {
+				return await promiseBool(settingsStore.commit());
+			} finally {
 				app.relaunch({});
 				app.exit(0);
-			});
+			}
 		},
 		async verifySettings() {
-			throw new Error('not impl');
+			
 		},
 	};
 

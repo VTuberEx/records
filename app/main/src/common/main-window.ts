@@ -6,6 +6,8 @@ export function createMainWindow() {
 	const options: BrowserWindowConstructorOptions = {
 		width: Math.max(settingsStore.current.windowState.w, 1824),
 		height: Math.max(settingsStore.current.windowState.h, 1008),
+		minWidth: 1200,
+		minHeight: 400,
 		webPreferences: {
 			preload: resolve(__dirname, '../preload/index.js'),
 		},
@@ -27,6 +29,16 @@ export function createMainWindow() {
 		}
 		win.show();
 		win.webContents.openDevTools();
+	});
+
+	win.setBackgroundColor('#eff4f9');
+	win.on('focus', () => {
+		win.setBackgroundColor('#eff4f9');
+		// emitClientEvent(win, 'focus', true);
+	});
+	win.on('blur', () => {
+		win.setBackgroundColor('#f3f3f3');
+		// emitClientEvent(win, 'focus', false);
 	});
 
 	win.on('close', () => {

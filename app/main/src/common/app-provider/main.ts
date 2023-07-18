@@ -51,10 +51,14 @@ export async function ApplicationProvider(request: GlobalRequest): Promise<Globa
 		} else if (pahtinfo.hostname === ApplicationParts.DebugSource) {
 			const slashIndex = pahtinfo.pathname.indexOf('/', 1);
 			const type = pahtinfo.pathname.slice(1, slashIndex);
-			const path = pahtinfo.pathname.slice(slashIndex + 1);
+			let path = pahtinfo.pathname.slice(slashIndex + 1);
 
 			switch (type) {
 				case ApplicationDebugParts.SourceRoot:
+					console.log('::: ',path)
+					if (path.startsWith('src/')) {
+						path = path.slice(4);
+					}
 					return sendfile(request, SOURCE_ROOT, path);
 				case ApplicationDebugParts.NodeModules:
 					return sendfile(request, MODULES_ROOT, path);

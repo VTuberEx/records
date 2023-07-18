@@ -15,7 +15,6 @@
 		"noEmit": true,
 		"typeRoots": [/*"../../../scripts/types", */ "../node_modules/@types/", "../node_modules"],
 		"types": [],
-		"strictNullChecks": false,
-		"strictPropertyInitialization": false
+		"isolatedModules": false
 	}
 }

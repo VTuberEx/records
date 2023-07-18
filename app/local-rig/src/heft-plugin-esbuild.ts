@@ -1,9 +1,7 @@
-import type { HeftConfiguration, IHeftTaskSession } from '@rushstack/heft';
-
 import { resolve } from 'path';
+import type { HeftConfiguration, IHeftTaskSession } from '@rushstack/heft';
 import { IHeftTaskPlugin } from '@rushstack/heft';
 import esbuild, { BuildContext, BuildOptions } from 'esbuild';
-import { SkipElectronPlugin } from './javascript/esbuild-skip-electron';
 import { ScssCombinePlugin } from './scss/esbuild-sass-bridge';
 
 export const PLUGIN_NAME = 'esbuild';
@@ -94,6 +92,7 @@ export default class ESBuildPlugin implements IHeftTaskPlugin<IOptions> {
 			mainFields: ['browser', 'module', 'main'],
 			conditions: ['browser', 'import', 'default'],
 			resolveExtensions: ['.ts', '.tsx', '.js'],
+			external: ['electron', 'node:*'],
 			loader: {
 				'.png': 'file',
 				'.svg': 'text',
@@ -110,11 +109,11 @@ export default class ESBuildPlugin implements IHeftTaskPlugin<IOptions> {
 			absWorkingDir: this.rootDir,
 			alias: this.alias,
 			keepNames: true,
-			format: 'esm',
+			format: 'cjs',
 			charset: 'utf8',
 			target: 'esnext',
 			plugins: [
-				SkipElectronPlugin(),
+				// SkipElectronPlugin(),
 				ScssCombinePlugin(session, {
 					// TODO
 					sourceRoot: './src',

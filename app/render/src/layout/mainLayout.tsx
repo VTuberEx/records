@@ -1,8 +1,12 @@
+import { bindThis, promiseBool } from '@idlebox/common';
+import { signal } from '@preact/signals';
 import { Component } from 'react';
+import { BlockUI } from 'primereact/blockui';
 import { MenuItem } from 'primereact/menuitem';
-import { TabMenu } from 'primereact/tabmenu';
+import { TabMenu, TabMenuTabChangeEvent } from 'primereact/tabmenu';
 import { TopLevelPage } from '../common/state/globalStates';
-import { globalStateTabPage } from '../common/state/page';
+import { appSettings } from '../common/state/settings';
+import { toastErrorRethrow } from '../common/ui-lib/globalToast';
 import { ProgressPage } from '../components/ProgressPage/WorkspacePage';
 import { SettingsPage } from '../components/SettingsPage/SettingsPage';
 import { ToolBoxPage } from '../components/ToolBoxPage/ToolBoxPage';
@@ -10,50 +14,66 @@ import { WorkspacePage } from '../components/WorkspacePage/WorkspacePage';
 import { className } from './mainLayout.scss';
 
 export class MainLayout extends Component {
-	override render() {
-		const { page, isWorking } = globalStateTabPage.compute();
+	private readonly selectedPage = signal(TopLevelPage.Settings);
+	private readonly blocked = signal(false);
 
+	@bindThis
+	private async setPage(event: TabMenuTabChangeEvent) {
+		if (this.selectedPage.value === TopLevelPage.Settings) {
+			this.blocked.value = true;
+			const pass = await promiseBool(appSettings.verify().catch(toastErrorRethrow));
+			this.blocked.value = false;
+			if (!pass) return;
+		}
+
+		this.selectedPage.value = event.value.id as any;
+	}
+
+	override render() {
 		const mainTabPages: MenuItem[] = [
-			{ id: TopLevelPage.Settings, disabled: isWorking, label: '设置' },
-			{ id: TopLevelPage.ToolBox, disabled: isWorking, label: '工具' },
-			{ id: TopLevelPage.Workspace, disabled: isWorking, label: '项目' },
-			{ id: TopLevelPage.Progress, disabled: !isWorking, label: '进度' },
+			{ id: TopLevelPage.Settings, label: '设置' },
+			{ id: TopLevelPage.ToolBox, label: '工具' },
+			{ id: TopLevelPage.Workspace, label: '项目' },
+			{ id: TopLevelPage.Progress, label: '进度' },
 		];
 
 		const commonClass = 'p-5';
+		const currentPage = this.selectedPage.value;
 
 		return (
 			<div className={className}>
-				<TabMenu
-					model={mainTabPages}
-					activeIndex={mainTabPages.findIndex((e) => e.id === page)}
-					onTabChange={(e) => {
-						globalStateTabPage.update(e.value.id as TopLevelPage);
-					}}
-				/>
-				<div id="SettingsPage" className={commonClass + (page === TopLevelPage.Settings ? '' : ' hidden')}>
-					<SettingsPage />
-				</div>
-				<div id="WorkspacePage" className={commonClass + (page === TopLevelPage.Workspace ? '' : ' hidden')}>
-					<WorkspacePage />
-				</div>
-				<div id="ProgressPage" className={commonClass + (page === TopLevelPage.Progress ? '' : ' hidden')}>
-					<ProgressPage />
-				</div>
-				<div id="ToolBoxPage" className={commonClass + (page === TopLevelPage.ToolBox ? '' : ' hidden')}>
-					<ToolBoxPage />
-				</div>
+				<BlockUI blocked={this.blocked.value}>
+					<TabMenu
+						model={mainTabPages}
+						activeIndex={mainTabPages.findIndex((e) => e.id === currentPage)}
+						onTabChange={this.setPage}
+					/>
+					<div
+						id="SettingsPage"
+						className={commonClass + (currentPage === TopLevelPage.Settings ? '' : ' hidden')}
+					>
+						<SettingsPage />
+					</div>
+					<div
+						id="WorkspacePage"
+						className={commonClass + (currentPage === TopLevelPage.Workspace ? '' : ' hidden')}
+					>
+						<WorkspacePage />
+					</div>
+					<div
+						id="ProgressPage"
+						className={commonClass + (currentPage === TopLevelPage.Progress ? '' : ' hidden')}
+					>
+						<ProgressPage />
+					</div>
+					<div
+						id="ToolBoxPage"
+						className={commonClass + (currentPage === TopLevelPage.ToolBox ? '' : ' hidden')}
+					>
+						<ToolBoxPage />
+					</div>
+				</BlockUI>
 			</div>
 		);
 	}
 }
-
-/*
-
-			<div className="flex flex-row h-full">
-				<div className="menu md:w-16rem h-full">
-					<DateSelectList />
-				</div>
-				<div className="main flex-grow-1 h-full"></div>
-			</div>
-			*/

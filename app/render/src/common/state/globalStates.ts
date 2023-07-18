@@ -9,8 +9,7 @@ export enum TopLevelPage {
 }
 
 const state = {
-	isWorking: signal(false),
-	selectedPage: signal(TopLevelPage.Settings),
+	// progress: {},
 	workingDirectory: signal(''),
 	recordCollectionInfo: {
 		sourceFolder: signal(''),

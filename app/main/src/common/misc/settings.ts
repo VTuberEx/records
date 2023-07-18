@@ -1,7 +1,7 @@
-import type { ISystemSetting } from '@app/protocol';
 import { mkdir, writeFile } from 'fs/promises';
 import { platform } from 'os';
 import { dirname, resolve } from 'path';
+import type { ISystemSetting } from '@app/protocol';
 import { DeepWriteable, oneMinute } from '@idlebox/common';
 import { commandInPath, exists, normalizePath } from '@idlebox/node';
 import { loadJsonFile, writeJsonFileBack } from '@idlebox/node-json-edit';
@@ -26,6 +26,9 @@ const defaultSettings: IMainSettings = {
 	whisperLanguage: '',
 	recordGapMinutes: 10,
 	recordIgnoreTitle: false,
+	opTime: 1,
+	opTimeIsSec: true,
+	opShowRoom: true,
 };
 
 export interface IMainSettings extends DeepWriteable<ISystemSetting> {
@@ -109,7 +112,7 @@ class SettingsStore {
 	}
 
 	set<T extends keyof IMainSettings>(key: T, value: IMainSettings[T]) {
-		if (typeof value !== typeof this.state[key])
+		if (typeof value !== typeof defaultSettings[key])
 			throw new TypeError(`mismatch data type. want ${typeof this.state[key]}, receive ${typeof value}.`);
 		if (value === this.state[key]) return;
 

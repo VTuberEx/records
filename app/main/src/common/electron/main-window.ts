@@ -1,6 +1,6 @@
-import { resolve } from 'path';
 import { BrowserWindow, BrowserWindowConstructorOptions, Input } from 'electron';
-import { settingsStore } from './misc/settings';
+import { settingsStore } from '../misc/settings-server';
+import { PRELOAD_FILE } from './constants';
 
 export function createMainWindow() {
 	const options: BrowserWindowConstructorOptions = {
@@ -9,7 +9,7 @@ export function createMainWindow() {
 		minWidth: 1200,
 		minHeight: 400,
 		webPreferences: {
-			preload: resolve(__dirname, '../preload/index.js'),
+			preload: PRELOAD_FILE,
 		},
 	};
 	if (settingsStore.current.windowState.x > 0 && settingsStore.current.windowState.y > 0) {
@@ -51,9 +51,15 @@ export function createMainWindow() {
 	// 	console.log('child log event: ', { ev, level, message, line, file });
 	// });
 	win.webContents.on('input-event', (e, ee) => {
-		if (ee.type === 'keyUp' && (ee as Input).key === 'F5') {
-			e.preventDefault();
-			win.reload();
+		if (ee.type === 'keyUp') {
+			if ((ee as Input).key === 'F5') {
+				e.preventDefault();
+				win.reload();
+			} else if ((ee as Input).key === 'r' && (ee as Input).modifiers.includes('control')) {
+				e.preventDefault();
+				createMainWindow();
+				win.close();
+			}
 		}
 	});
 }

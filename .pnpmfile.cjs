@@ -5,9 +5,15 @@ const renderPkg = require('./app/render/package.json');
 
 Object.assign(myDeps, renderPkg.dependencies, renderPkg.devDependencies);
 
-const ROOT_DIR = path.resolve(__dirname, '../..');
+const prettier = path.resolve(__dirname, 'scripts/prettier');
 
 function readPackage(pkg, context) {
+	for (const d of [pkg.dependencies, pkg.devDependencies, pkg.peerDependencies]) {
+		if (d['prettier']) {
+			d['prettier'] = 'file://' + prettier;
+		}
+	}
+
 	if (pkg.name.startsWith('@app/')) {
 		return pkg;
 	}

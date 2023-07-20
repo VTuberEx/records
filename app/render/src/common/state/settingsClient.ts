@@ -17,6 +17,7 @@ class AppSettings {
 	public readonly observables: SystemSettings = {
 		proxyServer: new Signal(''),
 		ffmpegExecPath: new Signal(''),
+		tempFolder: new Signal(''),
 		mediainfoExecPath: new Signal(''),
 		whisperModelPath: new Signal(''),
 		whisperModelName: new Signal(''),

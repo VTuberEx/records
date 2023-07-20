@@ -1,8 +1,8 @@
-import type { IHeftTaskSession } from '@rushstack/heft';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { basename, extname, isAbsolute, relative, resolve } from 'path';
+import type { IHeftTaskSession } from '@rushstack/heft';
 import ConcatWithSourceMap from 'concat-with-sourcemaps';
-import { ImportKind, OnLoadResult, OnResolveArgs, OnResolveResult, Plugin, PluginBuild } from 'esbuild';
+import type { ImportKind, OnLoadResult, OnResolveArgs, OnResolveResult, Plugin, PluginBuild } from 'esbuild';
 import { IScssCompilerOptions, IScssModuleCompileResult, MyScssCompiler } from './compiler';
 import { shimLogger } from './tools/logger';
 import { fixSourceMap, inlineSourceMap } from './tools/sourcemap';

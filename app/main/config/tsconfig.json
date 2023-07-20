@@ -1,0 +1,17 @@
+{
+	"$schema": "http://json.schemastore.org/tsconfig",
+	"extends": "@app/local-rig/profiles/default/src/tsconfig.json",
+	"compilerOptions": {
+		"module": "CommonJS",
+		"rootDir": "./",
+		"typeRoots": [
+			"../node_modules/@types",
+			"../node_modules",
+			"../../../node_modules/@types",
+			"../../../node_modules"
+		],
+		"lib": ["DOM", "ESNext"],
+		"noEmit": true,
+		"isolatedModules": false
+	}
+}

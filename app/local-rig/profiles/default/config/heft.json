@@ -3,7 +3,7 @@
 	"aliasesByName": {},
 	"phasesByName": {
 		"build": {
-			"cleanFiles": [{ "sourcePath": "lib" }],
+			"cleanFiles": [{ "sourcePath": "temp" }, { "sourcePath": "lib" }],
 			"tasksByName": {
 				"typescript": {
 					"taskPlugin": {
@@ -13,11 +13,21 @@
 				"esbuild": {
 					"taskDependencies": ["typescript"],
 					"taskPlugin": {
-						"pluginName": "esbuild",
-						"pluginPackage": "@app/local-rig",
+						"pluginPackage": "@build-script/heft-esbuild-plugin"
+					}
+				},
+				"make-index-html": {
+					"taskPlugin": {
+						"pluginName": "copy-files-plugin",
+						"pluginPackage": "@rushstack/heft",
 						"options": {
-							"scriptFile": "./src/preload/index.ts",
-							"output": "./lib/preload"
+							"copyOperations": [
+								{
+									"sourcePath": "src",
+									"destinationFolders": ["lib"],
+									"fileExtensions": [".html"]
+								}
+							]
 						}
 					}
 				}

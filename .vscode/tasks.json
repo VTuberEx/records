@@ -2,9 +2,19 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "shell",
 			"label": "rig监视",
-			"command": ["tsc", "-p", "${workspaceFolder}/app/local-rig/src", "-w"],
+			"detail": "  -> local-rig",
+			"type": "shell",
+			"icon": {
+				"id": "eye-watch",
+				"color": "terminal.ansiGreen"
+			},
+			"command": [
+				"tsc",
+				"-p",
+				"${workspaceFolder}/app/local-rig/src",
+				"-w"
+			],
 			"problemMatcher": "$tsc-watch",
 			"presentation": {
 				"echo": true,
@@ -35,7 +45,9 @@
 		{
 			"type": "shell",
 			"label": "主线程程序",
-			"dependsOn": ["[依赖] rig编译"],
+			"dependsOn": [
+				"[依赖] rig编译"
+			],
 			"group": "build",
 			"hide": true,
 			"problemMatcher": [],
@@ -47,13 +59,21 @@
 				"panel": "shared",
 				"clear": true
 			},
-			"options": { "cwd": "${workspaceFolder}/app/main" },
-			"command": ["pnpm", "run", "watch"]
+			"options": {
+				"cwd": "${workspaceFolder}/app/main"
+			},
+			"command": [
+				"pnpm",
+				"run",
+				"watch"
+			]
 		},
 		{
 			"type": "shell",
 			"label": "渲染程序",
-			"dependsOn": ["[依赖] rig编译"],
+			"dependsOn": [
+				"[依赖] rig编译"
+			],
 			"group": "build",
 			"hide": true,
 			"problemMatcher": [],
@@ -66,20 +86,90 @@
 				"showReuseMessage": false,
 				"clear": true
 			},
-			"options": { "cwd": "${workspaceFolder}/app/render" },
-			"command": ["pnpm", "run", "watch"]
+			"options": {
+				"cwd": "${workspaceFolder}/app/render"
+			},
+			"command": [
+				"pnpm",
+				"run",
+				"watch"
+			]
 		},
 		{
 			"label": "监视修改",
+			"detail": "  -> 主要任务",
 			"icon": {
-				"id": "play"
+				"id": "play",
+				"color": "terminal.ansiGreen"
 			},
-			"dependsOn": ["渲染程序", "主线程程序"],
+			"dependsOn": [
+				"渲染程序",
+				"主线程程序"
+			],
 			"problemMatcher": [],
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			}
+		},
+		{
+			"label": "安装依赖",
+			"detail": "  -> pnpm i",
+			"icon": {
+				"id": "package"
+			},
+			"problemMatcher": [],
+			"type": "shell",
+			"command": [
+				"pnpm",
+				"install",
+				"-r"
+			],
+			"group": "none"
+		},
+		{
+			"label": "更新依赖版本",
+			"detail": "  -> pnpm up",
+			"icon": {
+				"id": "cloud-download",
+				"color": "terminal.ansiYellow"
+			},
+			"options": {
+				"env": {
+					"npm_config_prefer_offline": "false",
+					"npm_config_prefer_online": "true"
+				}
+			},
+			"problemMatcher": [],
+			"type": "shell",
+			"command": [
+				"pnpm",
+				"install",
+				"-r"
+			],
+			"group": "none",
+			"presentation": {
+				"echo": true,
+				"reveal": "silent",
+				"clear": true
+			}
+		},
+		{
+			"label": "全部清理",
+			"detail": "  -> pnpm run -r clean",
+			"icon": {
+				"id": "trash",
+				"color": "terminal.ansiRed"
+			},
+			"type": "shell",
+			"command": [
+				"pnpm",
+				"run",
+				"-r",
+				"clean"
+			],
+			"problemMatcher": [],
+			"group": "none"
 		}
 	]
 }

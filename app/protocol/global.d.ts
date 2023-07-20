@@ -1,6 +1,7 @@
 export interface ISystemSetting {
 	readonly proxyServer: string;
 	readonly ffmpegExecPath: string;
+	readonly tempFolder: string;
 	readonly mediainfoExecPath: string;
 	readonly whisperModelPath: string;
 	readonly whisperModelName: string;

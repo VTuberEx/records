@@ -1,43 +1,21 @@
-import { resolve } from 'path';
+import { readFile } from 'fs/promises';
+import { normalizePath } from '@idlebox/common';
 import type { HeftConfiguration, IHeftTaskSession } from '@rushstack/heft';
 import { IHeftTaskPlugin } from '@rushstack/heft';
-import esbuild, { BuildContext, BuildOptions } from 'esbuild';
-import { ScssCombinePlugin } from './scss/esbuild-sass-bridge';
+import commentJson from 'comment-json';
+import type { BuildContext, BuildOptions } from 'esbuild';
+import { filterOptions } from './common/config';
+import { ESBuildPublicApi } from './common/type';
 
 export const PLUGIN_NAME = 'esbuild';
 
-interface IOptions {
-	readonly alias?: Record<string, string>;
-	readonly scriptFile: string | string[];
-	readonly styleFile: string;
-	readonly output: string;
-	readonly publicPath?: string;
-}
+export default class ESBuildPlugin implements IHeftTaskPlugin {
+	private declare rootDir: string;
 
-export default class ESBuildPlugin implements IHeftTaskPlugin<IOptions> {
-	private outputDir: string = '';
-	private rootDir: string = '';
-	private publicPath?: string;
-	private alias?: Record<string, string>;
+	apply(session: IHeftTaskSession, configuration: HeftConfiguration): void {
+		this.rootDir = normalizePath(configuration.buildFolderPath);
 
-	apply(session: IHeftTaskSession, configuration: HeftConfiguration, options: IOptions): void {
-		if (!options.output) {
-			throw new Error('output is required');
-		}
-
-		const outputDir = resolve(configuration.buildFolderPath, './' + options.output);
-		if (!outputDir.startsWith(configuration.buildFolderPath)) {
-			session.logger.terminal.writeWarningLine('output dirctory is out of root: ' + outputDir);
-		}
-		if (outputDir === configuration.buildFolderPath) {
-			throw new Error('output dirctory is root: ' + options.output);
-		}
-		this.outputDir = outputDir;
-		this.publicPath = options.publicPath;
-		this.alias = options.alias;
-		this.rootDir = configuration.buildFolderPath;
-
-		const contextsPromise = this.getContext(session, options);
+		const contextsPromise = this.getContext(session, configuration);
 
 		session.hooks.run.tapPromise(PLUGIN_NAME, async () => {
 			const contexts = await contextsPromise;
@@ -62,63 +40,81 @@ export default class ESBuildPlugin implements IHeftTaskPlugin<IOptions> {
 		});
 	}
 
+	private _tsnodeinited = false;
+	private async _initOptions(session: IHeftTaskSession, configuration: HeftConfiguration) {
+		let configFile;
+		for (const ext of ['.ts', '.cjs', '.mjs', '.json']) {
+			configFile = configuration.rigConfig.tryResolveConfigFilePath('config/esbuild' + ext);
+			if (configFile) break;
+		}
+		if (!configFile) {
+			throw new Error(
+				'missing config file: config/esbuild.{ts|cjs|mjs|json}, it must `export const options: import("esbuild").BuildOptions` (or it\'s array)'
+			);
+		}
+
+		session.logger.terminal.writeDebugLine('(re-)load config file: ' + configFile);
+		let options_in: BuildOptions | BuildOptions[];
+		if (configFile.endsWith('.ts')) {
+			if (!this._tsnodeinited) {
+				session.logger.terminal.writeDebug('loading ts-node: ');
+				const tsnodePath = await configuration.rigPackageResolver.resolvePackageAsync(
+					'ts-node',
+					session.logger.terminal
+				);
+				session.logger.terminal.writeDebugLine(tsnodePath);
+				require(tsnodePath + '/register');
+				this._tsnodeinited = true;
+			}
+
+			options_in = require(configFile).options;
+		} else if (configFile.endsWith('.cjs')) {
+			const req = require(configFile);
+			options_in = req.default?.options ?? req.options;
+		} else if (configFile.endsWith('.mjs')) {
+			const req = await import(configFile);
+			options_in = req.options;
+		} else if (configFile.endsWith('.json')) {
+			const text = await readFile(configFile, 'utf-8');
+			options_in = commentJson.parse(text, undefined, true) as any;
+		} else {
+			throw new Error('this is impossible');
+		}
+		if (typeof options_in !== 'object') throw new Error('invalid config file: ' + configFile);
+
+		const optionsArray = Array.isArray(options_in) ? options_in : [options_in];
+
+		session.logger.terminal.writeVerbose(JSON.stringify(optionsArray, null, 4));
+		return optionsArray.map((options) => filterOptions(this.rootDir, options));
+	}
+
+	private declare _esbuild;
+	private async getEsbuild(session: IHeftTaskSession, configuration: HeftConfiguration): Promise<ESBuildPublicApi> {
+		if (!this._esbuild) {
+			session.logger.terminal.writeDebug('loading esbuild: ');
+			const esbuildPath = await configuration.rigPackageResolver.resolvePackageAsync(
+				'esbuild',
+				session.logger.terminal
+			);
+			session.logger.terminal.writeDebugLine(esbuildPath);
+			this._esbuild = require(esbuildPath);
+		}
+		return this._esbuild;
+	}
+
 	private _contexts?: BuildContext[];
-	async getContext(session: IHeftTaskSession, options: IOptions) {
-		if (this._contexts) return this._contexts;
+	async getContext(session: IHeftTaskSession, configuration: HeftConfiguration, force = false) {
+		if (this._contexts && !force) return this._contexts;
+
+		const esbuild = await this.getEsbuild(session, configuration);
+		const optionsArray = await this._initOptions(session, configuration);
 
 		const contexts = [];
-
-		if (options.scriptFile) {
-			const arr = Array.isArray(options.scriptFile) ? options.scriptFile : [options.scriptFile];
-			contexts.push(await this.createScriptContext(session, arr));
-		}
-		if (options.styleFile) {
-			contexts.push(await this.createScriptContext(session, [options.styleFile]));
+		for (const options of optionsArray) {
+			contexts.push(await esbuild.context<BuildOptions>(options));
 		}
 
 		this._contexts = contexts;
 		return contexts;
-	}
-
-	createScriptContext(session: IHeftTaskSession, entryFiles: string[]) {
-		return esbuild.context<BuildOptions>({
-			entryPoints: entryFiles,
-			bundle: true,
-			splitting: false,
-			platform: 'browser',
-			assetNames: 'assets/[name][ext]',
-			outdir: this.outputDir,
-			publicPath: this.publicPath,
-			mainFields: ['browser', 'module', 'main'],
-			conditions: ['browser', 'import', 'default'],
-			resolveExtensions: ['.ts', '.tsx', '.js'],
-			external: ['electron', 'node:*'],
-			loader: {
-				'.png': 'file',
-				'.svg': 'text',
-				'.woff2': 'file',
-				'.woff': 'file',
-				'.ttf': 'file',
-				'.eot': 'file',
-			},
-			sourcemap: 'linked',
-			sourceRoot: 'app://debug/',
-			sourcesContent: false,
-			write: true,
-			metafile: true,
-			absWorkingDir: this.rootDir,
-			alias: this.alias,
-			keepNames: true,
-			format: 'cjs',
-			charset: 'utf8',
-			target: 'esnext',
-			plugins: [
-				// SkipElectronPlugin(),
-				ScssCombinePlugin(session, {
-					// TODO
-					sourceRoot: './src',
-				}),
-			],
-		});
 	}
 }

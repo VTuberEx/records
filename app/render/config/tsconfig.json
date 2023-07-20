@@ -1,9 +1,11 @@
 {
+	"$schema": "http://json.schemastore.org/tsconfig",
 	"extends": "@app/local-rig/profiles/default/src/tsconfig.json",
 	"compilerOptions": {
-		"outDir": "../lib",
+		"module": "CommonJS",
 		"rootDir": "./",
 		"lib": ["DOM", "ESNext"],
-		"noEmit": true
+		"noEmit": true,
+		"isolatedModules": false
 	}
 }

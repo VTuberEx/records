@@ -1,7 +1,7 @@
 import { access, readFile, stat } from 'fs/promises';
 import { extname, resolve } from 'path';
 import { StatusCodes } from 'http-status-codes';
-import { CLIENT_PATH, MODULES_ROOT, SOURCE_ROOT } from '../constants';
+import { CLIENT_PATH, NODE_MODULES_ROOT, RENDER_PROJ_ROOT } from '../electron/constants';
 
 export enum ApplicationParts {
 	Application = 'dist',
@@ -59,9 +59,9 @@ export async function ApplicationProvider(request: GlobalRequest): Promise<Globa
 					if (path.startsWith('src/')) {
 						path = path.slice(4);
 					}
-					return sendfile(request, SOURCE_ROOT, path);
+					return sendfile(request, RENDER_PROJ_ROOT, path);
 				case ApplicationDebugParts.NodeModules:
-					return sendfile(request, MODULES_ROOT, path);
+					return sendfile(request, NODE_MODULES_ROOT, path);
 			}
 
 			log(request, false, `TODO: ${type} -- ${path}`);

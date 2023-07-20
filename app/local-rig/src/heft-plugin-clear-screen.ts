@@ -7,7 +7,7 @@ export default class ClearScreenPlugin implements IHeftLifecyclePlugin {
 		_pluginOptions?: void | undefined
 	): void {
 		session.hooks.toolStart.tap('clear-screen', () => {
-			console.log('hook start!!!');
+			if (process.stderr.isTTY) process.stderr.write('\x1Bc');
 		});
 	}
 }

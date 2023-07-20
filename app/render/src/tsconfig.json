@@ -8,8 +8,6 @@
 		"lib": ["DOM", "ESNext"],
 		"sourceRoot": "app://debug/",
 		"resolveJsonModule": true,
-		"jsx": "react-jsx",
-		"jsxImportSource": "react",
 		"rootDirs": ["./", "../temp/sass-ts/"],
 		"baseUrl": "./",
 		"noEmit": true,

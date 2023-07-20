@@ -1,8 +1,8 @@
+import type { BuildOptions } from 'esbuild';
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, extname, relative, resolve } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { relativePath } from '@idlebox/node';
-import { BuildOptions } from 'esbuild';
 import { compile, CompileResult, compileString } from 'sass';
 import { ExLogger } from './tools/logger';
 import { createScssImporter } from './tools/resolve';

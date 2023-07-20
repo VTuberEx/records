@@ -10,7 +10,7 @@ import { Message } from 'primereact/message';
 import { Panel } from 'primereact/panel';
 import { ToggleButton } from 'primereact/togglebutton';
 import { electronAPI } from '../../common/electron/bridge';
-import { appSettings } from '../../common/state/settings';
+import { appSettings } from '../../common/state/settingsClient';
 import { disableEvent } from '../../common/uitls/events';
 
 export class SettingsPage extends Component {
@@ -47,6 +47,18 @@ export class SettingsPage extends Component {
 								id="ffmpeg-path"
 								placeholder="输入路径、拖动exe，或者点右边打开"
 								{...appSettings.getInputProps('ffmpegExecPath')}
+							/>
+							<Button icon="pi pi-folder-open" severity="secondary" disabled />
+						</div>
+
+						<div className="p-inputgroup">
+							<label htmlFor="temp-path" className="p-inputgroup-addon">
+								临时目录
+							</label>
+							<InputText
+								id="temp-path"
+								placeholder="主要用于ffmpeg的中间输出"
+								{...appSettings.getInputProps('tempFolder')}
 							/>
 							<Button icon="pi pi-folder-open" severity="secondary" disabled />
 						</div>

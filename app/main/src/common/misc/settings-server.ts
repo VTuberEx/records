@@ -1,11 +1,11 @@
 import { mkdir, writeFile } from 'fs/promises';
-import { platform } from 'os';
 import { dirname, resolve } from 'path';
 import type { ISystemSetting } from '@app/protocol';
 import { DeepWriteable, oneMinute } from '@idlebox/common';
 import { commandInPath, exists, normalizePath } from '@idlebox/node';
 import { loadJsonFile, writeJsonFileBack } from '@idlebox/node-json-edit';
-import { APP_ROOT, STORAGE_ROOT } from '../constants';
+import { app } from 'electron';
+import { MONOREPO_ROOT, STORAGE_ROOT } from '../electron/constants';
 import { shutdown } from './shutdown';
 
 const defaultSettings: IMainSettings = {
@@ -18,6 +18,7 @@ const defaultSettings: IMainSettings = {
 		w: -1,
 		h: -1,
 	},
+	tempFolder: '',
 	proxyServer: '',
 	ffmpegExecPath: '',
 	mediainfoExecPath: '',
@@ -49,6 +50,7 @@ class SettingsStore {
 	private declare state: IMainSettings;
 	private changed: boolean = false;
 	private timer?: NodeJS.Timeout;
+	private errors?: string[];
 
 	constructor() {
 		this.file = resolve(STORAGE_ROOT, 'state.json');
@@ -106,6 +108,7 @@ class SettingsStore {
 
 		if (this.state.ffmpegExecPath) this.state.ffmpegExecPath = normalizePath(this.state.ffmpegExecPath);
 		if (this.state.mediainfoExecPath) this.state.mediainfoExecPath = normalizePath(this.state.mediainfoExecPath);
+		if (this.state.tempFolder) this.state.tempFolder = normalizePath(this.state.tempFolder);
 		if (this.state.whisperModelPath) this.state.whisperModelPath = normalizePath(this.state.whisperModelPath);
 
 		console.log(JSON.stringify(this.state, null, 2));
@@ -134,23 +137,25 @@ class SettingsStore {
 
 		this.resetToBeCommit();
 	}
+
+	hasError() {
+		return !!this.errors;
+	}
+
+	async verify() {
+		const errors: string[] = [];
+		// pathVar;
+		// TODO
+		if (errors.length) this.errors = errors;
+	}
 }
 
 export const settingsStore = new SettingsStore();
 let detected = false;
-function detectSettings(settings: IMainSettings) {
+async function detectSettings(settings: IMainSettings) {
 	if (detected) return;
-
 	detected = true;
-	switch (platform()) {
-		case 'win32':
-			return detectDefaultSettingsWin32(settings);
-	}
 
-	return undefined;
-}
-
-async function detectDefaultSettingsWin32(settings: IMainSettings) {
 	if (!settings.mediainfoExecPath) {
 		const mi = await commandInPath('mediainfo');
 		settings.mediainfoExecPath = mi || '';
@@ -163,12 +168,15 @@ async function detectDefaultSettingsWin32(settings: IMainSettings) {
 	}
 	if (!settings.whisperModelPath) {
 		for (const level of ['tiny', 'base', 'small', 'medium', 'large']) {
-			const f = resolve(APP_ROOT, `ggml-${level}.bin`);
+			const f = resolve(MONOREPO_ROOT, `ggml-${level}.bin`);
 			if (await exists(f)) {
 				settings.whisperModelName = level;
 				settings.whisperModelPath = f;
 				break;
 			}
 		}
+	}
+	if (!settings.tempFolder) {
+		settings.tempFolder = resolve(app.getPath('temp'), app.getName().replace(/[/\\]/g, '_'));
 	}
 }

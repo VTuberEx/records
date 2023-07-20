@@ -3,7 +3,7 @@ import './common/ui-lib/language';
 import { render } from 'react-dom';
 import { PrimeReactProvider } from 'primereact/api';
 import { electronEvents } from './common/electron/bridge';
-import { appSettings } from './common/state/settings';
+import { appSettings } from './common/state/settingsClient';
 import { GlobalToast } from './common/ui-lib/globalToast';
 import { MainLayout } from './layout/mainLayout';
 

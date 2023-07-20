@@ -1,9 +1,9 @@
-import type { IElectronAPI } from '@app/protocol';
 import { rmSync } from 'fs';
+import type { IElectronAPI } from '@app/protocol';
 import { promiseBool } from '@idlebox/common';
 import { app, ipcMain } from 'electron';
-import { STORAGE_ROOT } from '../constants';
-import { settingsStore } from '../misc/settings';
+import { STORAGE_ROOT } from '../electron/constants';
+import { settingsStore } from '../misc/settings-server';
 
 interface IRequestMetadata {
 	readonly request: keyof IElectronAPI;
@@ -19,6 +19,8 @@ export async function startApi() {
 		},
 		uninstall() {
 			rmSync(STORAGE_ROOT, { recursive: true, force: true });
+			rmSync(app.getPath('logs'), { recursive: true, force: true });
+
 			app.exit(0);
 			throw new Error('???');
 		},
@@ -30,8 +32,8 @@ export async function startApi() {
 				app.exit(0);
 			}
 		},
-		async verifySettings() {
-			
+		verifySettings() {
+			return settingsStore.verify();
 		},
 	};
 

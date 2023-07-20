@@ -21,18 +21,18 @@
 		"@app/local-rig": "workspace:^",
 		"@app/protocol": "workspace:^",
 		"@rushstack/heft": "^0.56.3",
-		"@types/react-dom": "^18.2.7",
-		"@types/react": "^18.2.15"
+		"@types/react": "^18.2.15",
+		"@types/react-dom": "^18.2.7"
 	},
 	"dependencies": {
-		"@idlebox/common": "^1.3.20",
+		"@idlebox/common": "^1.3.24",
 		"@preact/signals": "^1.1.5",
 		"concat-with-sourcemaps": "^1.1.0",
-		"es-module-shims": "^1.7.3",
+		"es-module-shims": "^1.8.0",
 		"primeflex": "^3.3.1",
 		"primeicons": "^6.0.1",
 		"primereact": "^9.6.0",
-		"primereact-sass-theme": "file://../../scripts/primereact-sass-theme",
+		"primereact-sass-theme": "file:../../scripts/primereact-sass-theme",
 		"ts-extras": "^0.11.0"
 	}
 }

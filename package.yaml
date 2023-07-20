@@ -1,1 +1,9 @@
 name: ROOT
+dependencies:
+  '@build-script/heft-esbuild-plugin': >-
+    link:/data/DevelopmentRoot/github.com/gongt/baobao/@build-script/heft-esbuild-plugin
+  '@types/prettier': ^2.7.3
+pnpm:
+  overrides:
+    '@build-script/heft-esbuild-plugin': >-
+      /data/DevelopmentRoot/github.com/gongt/baobao/@build-script/heft-esbuild-plugin

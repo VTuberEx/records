@@ -5,8 +5,8 @@ import { CompileResult } from 'sass';
 
 export type RawSourceMap = Required<CompileResult>['sourceMap'];
 
-export function inlineSourceMap({ ...sourceMap }: RawSourceMap, sourceRoot: string, entryFile: string) {
-	fixSourceMap(sourceMap, sourceRoot, entryFile);
+export function inlineSourceMap({ ...sourceMap }: RawSourceMap, sourceRoot: string, outputFile: string) {
+	fixSourceMap(sourceMap, sourceRoot, outputFile);
 
 	// console.log(sourceMap?.sources);
 

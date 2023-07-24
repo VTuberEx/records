@@ -20,6 +20,7 @@
 	"devDependencies": {
 		"@app/local-rig": "workspace:^",
 		"@app/protocol": "workspace:^",
+		"@build-script/heft-esbuild-plugin": "^0.0.4",
 		"@rushstack/heft": "^0.56.3",
 		"@types/react": "^18.2.15",
 		"@types/react-dom": "^18.2.7"

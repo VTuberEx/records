@@ -9,6 +9,7 @@ export const options: BuildOptions[] = [
 		entryPoints: [{ in: './src/index.tsx', out: 'index' }],
 		outdir: './lib',
 		publicPath: 'app://dist/',
+		format: 'cjs',
 		alias: { react: 'preact/compat', 'react-dom': 'preact/compat' },
 		plugins: [ScssCombinePlugin(session, { sourceRoot: 'src' })],
 	},
@@ -16,6 +17,7 @@ export const options: BuildOptions[] = [
 		entryPoints: [{ in: './src/styles/index.scss', out: 'global' }],
 		outdir: './lib',
 		publicPath: 'app://dist/',
+		format: 'cjs',
 		plugins: [ScssCombinePlugin(session, { sourceRoot: 'src' })],
 	},
 ];

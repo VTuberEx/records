@@ -5,7 +5,7 @@ import ConcatWithSourceMap from 'concat-with-sourcemaps';
 import type { ImportKind, OnLoadResult, OnResolveArgs, OnResolveResult, Plugin, PluginBuild } from 'esbuild';
 import { IScssCompilerOptions, IScssModuleCompileResult, MyScssCompiler } from './compiler';
 import { shimLogger } from './tools/logger';
-import { fixSourceMap, inlineSourceMap } from './tools/sourcemap';
+import { fixSourceMap } from './tools/sourcemap';
 
 interface IOptions extends Partial<IScssCompilerOptions> {}
 
@@ -108,12 +108,12 @@ export function ScssCombinePlugin(session: IHeftTaskSession, options: IOptions):
 				if (args.namespace !== 'file') return;
 
 				if (args.pluginData?.asStyle) {
-					const { cssText, sourceMap, watchFiles } = compiler.compileStyle(args.path);
+					const { cssText, /*sourceMap,*/ watchFiles } = compiler.compileStyle(args.path);
 
-					const contents =
-						cssText +
-						inlineSourceMap(sourceMap, build.initialOptions.sourceRoot!, build.initialOptions.sourceRoot!);
-					return { loader: 'css', contents, watchFiles };
+					// const contents =
+					// 	cssText +
+					// 	inlineSourceMap(sourceMap, build.initialOptions.sourceRoot!, build.initialOptions.sourceRoot!);
+					return { loader: 'css', contents: cssText, watchFiles };
 				} else {
 					const result = compiler.compileModule(args.path);
 

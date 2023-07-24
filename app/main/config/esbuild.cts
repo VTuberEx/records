@@ -1,9 +1,8 @@
 /// <reference types='@build-script/heft-esbuild-plugin' />
 
-import { readFile } from 'fs/promises';
 import { dirname, resolve } from 'path';
 import { findUpUntilSync, relativePath } from '@idlebox/node';
-import type { BuildOptions, Plugin } from 'esbuild';
+import type { BuildOptions } from 'esbuild';
 
 const instance = findUpUntilSync(session.rootDir, 'pnpm-workspace.yaml');
 if (!instance) throw new Error('missing pnpm-workspace.yaml?');
@@ -26,52 +25,24 @@ export const options: BuildOptions[] = [
 		entryPoints: [{ in: './src/preload/index.ts', out: 'preload' }],
 		platform: 'node',
 		outdir: './lib',
-		external: ['electron', 'fix-esm'],
+		external: ['electron'],
+		minifySyntax: true,
+		sourceRoot: 'app://preload/',
+		sourcemap: 'inline',
+		sourcesContent: true,
+		format: 'cjs',
 	},
 	{
 		entryPoints: [{ in: './src/main.ts', out: 'main' }],
 		platform: 'node',
 		outdir: './lib',
-		define,
-		external: ['electron', 'fix-esm'],
-		plugins: [fixLinguistLanguages()],
+		format: 'cjs',
+		external: ['electron'],
+		inject: ['./config/tools/inject.js'],
+		define: {
+			...define,
+			// __dirname: '__dirname',
+		},
+		minifySyntax: true,
 	},
 ];
-function fixLinguistLanguages(): Plugin {
-	return {
-		name: 'throwOutPrettier',
-		setup(build) {
-			build.onLoad({ filter: /linguist-languages\/lib\/index.mjs$/ }, async (args) => {
-				const data = await readFile(args.path, 'utf-8');
-				return {
-					contents: decodeURIComponent(data),
-				};
-			});
-		},
-	};
-}
-
-// function throwOutPrettier(): Plugin {
-// 	return {
-// 		name: 'throwOutPrettier',
-// 		setup(build) {
-// 			build.onLoad({ filter: /\/node_modules\/prettier\// }, (args) => {
-// 				// const require = createRequire(args.resolveDir);
-// 				// const result = require.resolve('prettier');
-// 				// return {
-// 				// 	path: result,
-// 				// 	loader: 'file',
-// 				// };
-// 				if (args.path.includes('/parser')) {
-// 					return {
-// 						contents: '',
-// 						loader: 'empty',
-// 					};
-// 				}
-// 				return {
-// 					loader: 'file',
-// 				};
-// 			});
-// 		},
-// 	};
-// }

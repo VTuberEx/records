@@ -7,14 +7,13 @@
 		"watch": "tsc -p src --watch"
 	},
 	"dependencies": {
-		"@build-script/heft-esbuild-plugin": "link:/data/DevelopmentRoot/github.com/gongt/baobao/@build-script/heft-esbuild-plugin",
+		"@build-script/heft-esbuild-plugin": "^0.0.4",
 		"@build-script/heft-plugins": "^0.0.4",
 		"@build-script/single-dog-asset": "^1.0.26",
 		"@rushstack/heft": "^0.56.3",
 		"@types/node": "^20.4.2",
 		"esbuild": "^0.18.15",
 		"preact": "^10.16.0",
-		"prettier": "file:/data/DevelopmentRoot/github.com/VTuberEx/records/scripts/prettier",
 		"sass": "^1.64.0",
 		"ts-node": "^10.9.1",
 		"typescript": "^5.1.6"

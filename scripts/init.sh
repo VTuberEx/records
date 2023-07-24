@@ -19,4 +19,3 @@ git_download() {
 }
 
 git_download primereact-sass-theme https://github.com/primefaces/primereact-sass-theme.git
-git_download prettier https://github.com/prettier/prettier.git
